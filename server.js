@@ -7,7 +7,6 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-//  CONNECT DATABASE
 const pool = new Pool({
     connectionString: "postgresql://r12user:LWCN2QX6BYu6Myr7VH3tYZnyz6LHvPN9@dpg-d76iatidbo4c73bkop70-a/r12",
     ssl: {
@@ -15,7 +14,6 @@ const pool = new Pool({
     }
 })
 
-// CREATE TABLE (auto)
 pool.query(`
     CREATE TABLE IF NOT EXISTS students (
         id SERIAL PRIMARY KEY,
@@ -26,7 +24,6 @@ pool.query(`
     )
 `)
 
-// API
 app.post("/join", async (req, res) => {
     const { name, age, email, phone } = req.body
 
@@ -44,14 +41,6 @@ app.post("/join", async (req, res) => {
     }
 })
 
-app.get("/", (req, res) => {
-    res.send("Backend running")
-})
-
-app.listen(3000, () => {
-    console.log("Server started")
-})
-
 app.get("/students", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM students")
@@ -59,4 +48,12 @@ app.get("/students", async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: "Error fetching data" })
     }
+})
+
+app.get("/", (req, res) => {
+    res.send("Backend running")
+})
+
+app.listen(3000, () => {
+    console.log("Server started")
 })
