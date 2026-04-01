@@ -51,3 +51,12 @@ app.get("/", (req, res) => {
 app.listen(3000, () => {
     console.log("Server started")
 })
+
+app.get("/students", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM students")
+        res.json(result.rows)
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching data" })
+    }
+})
