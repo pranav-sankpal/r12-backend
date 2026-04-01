@@ -1,34 +1,45 @@
 const express = require("express")
 const cors = require("cors")
-const mongoose = require("mongoose")
+const { Pool } = require("pg")
 
 const app = express()
 
 app.use(cors())
 app.use(express.json())
 
-// 🔥 CONNECT DATABASE
-mongoose.connect("YOUR_MONGODB_URL")
-.then(() => console.log("DB connected"))
-.catch(err => console.log(err))
-
-// 🔥 SCHEMA
-const userSchema = new mongoose.Schema({
-    name: String,
-    age: Number,
-    email: String,
-    phone: String
+//  CONNECT DATABASE
+const pool = new Pool({
+    connectionString: "YOUR_DATABASE_URL",
+    ssl: {
+        rejectUnauthorized: false
+    }
 })
 
-const User = mongoose.model("User", userSchema)
+// CREATE TABLE (auto)
+pool.query(`
+    CREATE TABLE IF NOT EXISTS students (
+        id SERIAL PRIMARY KEY,
+        name TEXT,
+        age INT,
+        email TEXT,
+        phone TEXT
+    )
+`)
 
-// 🔥 ROUTE
+// API
 app.post("/join", async (req, res) => {
+    const { name, age, email, phone } = req.body
+
     try {
-        const user = new User(req.body)
-        await user.save()
-        res.json({ message: "Saved successfully" })
+        await pool.query(
+            "INSERT INTO students (name, age, email, phone) VALUES ($1, $2, $3, $4)",
+            [name, age, email, phone]
+        )
+
+        res.json({ message: "Data saved successfully" })
+
     } catch (err) {
+        console.log(err)
         res.status(500).json({ message: "Error saving data" })
     }
 })
