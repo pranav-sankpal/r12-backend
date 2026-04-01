@@ -9,7 +9,7 @@ app.use(express.json())
 
 //  CONNECT DATABASE
 const pool = new Pool({
-    connectionString: "YOUR_DATABASE_URL",
+    connectionString: "postgresql://r12user:LWCN2QX6BYu6Myr7VH3tYZnyz6LHvPN9@dpg-d76iatidbo4c73bkop70-a/r12",
     ssl: {
         rejectUnauthorized: false
     }
